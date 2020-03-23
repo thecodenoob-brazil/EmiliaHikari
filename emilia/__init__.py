@@ -7,19 +7,16 @@ from functools import wraps
 
 import telegram.ext as tg
 
-# enable logging
 logging.basicConfig(
 	format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 	level=logging.INFO)
 
 LOGGER = logging.getLogger(__name__)
 
-# if version < 3.6, stop bot.
 if sys.version_info[0] < 3 or sys.version_info[1] < 6:
-	LOGGER.error("You MUST have a python version of at least 3.6! Multiple features depend on this. Bot quitting.")
+	LOGGER.error("Você DEVE ter uma versão python de pelo menos 3.6! Vários recursos dependem disso. Bot desligando!.")
 	quit(1)
 
-# Check if system is reboot or not
 try:
 	os.remove("reboot")
 except:
@@ -32,7 +29,7 @@ if ENV:
 	try:
 		OWNER_ID = int(os.environ.get('OWNER_ID', None))
 	except ValueError:
-		raise Exception("Your OWNER_ID env variable is not a valid integer.")
+		raise Exception("Sua variável OWNER_ID não é um número inteiro válido.")
 
 	MESSAGE_DUMP = os.environ.get('MESSAGE_DUMP', None)
 	OWNER_USERNAME = os.environ.get("OWNER_USERNAME", None)
@@ -41,30 +38,30 @@ if ENV:
 	try:
 		SUDO_USERS = set(int(x) for x in os.environ.get("SUDO_USERS", "").split())
 	except ValueError:
-		raise Exception("Your sudo users list does not contain valid integers.")
+		raise Exception("Sua lista de usuários do sudo não contém números inteiros válidos.")
 
 	try:
 		SUPPORT_USERS = set(int(x) for x in os.environ.get("SUPPORT_USERS", "").split())
 	except ValueError:
-		raise Exception("Your support users list does not contain valid integers.")
+		raise Exception("Sua lista de usuários de suporte não contém números inteiros válidos.")
 
 	try:
 		SPAMMERS = set(int(x) for x in os.environ.get("SPAMMERS", "").split())
 	except ValueError:
-		raise Exception("Your spammers users list does not contain valid integers.")
+		raise Exception("Sua lista de usuários de spammers não contém números inteiros válidos.")
 
 	try:
 		GROUP_BLACKLIST = set(int(x) for x in os.environ.get("GROUP_BLACKLIST", "").split())
 	except ValueError:
-		raise Exception("Your GROUP_BLACKLIST users list does not contain valid integers.")
+		raise Exception("Sua lista de usuários do GROUP_BLACKLIST não contém números inteiros válidos.")
 
 	try:
 		WHITELIST_USERS = set(int(x) for x in os.environ.get("WHITELIST_USERS", "").split())
 	except ValueError:
-		raise Exception("Your whitelisted users list does not contain valid integers.")
+		raise Exception("nossa lista de usuários na lista de permissões não contém números inteiros válidos.")
 
 	WEBHOOK = bool(os.environ.get('WEBHOOK', False))
-	URL = os.environ.get('URL', "")  # Does not contain token
+	URL = os.environ.get('URL', "")
 	PORT = int(os.environ.get('PORT', 5000))
 	CERT_PATH = os.environ.get("CERT_PATH")
 
@@ -76,7 +73,6 @@ if ENV:
 	STRICT_GBAN = bool(os.environ.get('STRICT_GBAN', False))
 	WORKERS = int(os.environ.get('WORKERS', 8))
 	BAN_STICKER = os.environ.get('BAN_STICKER', 'CAADBAAD4kYAAuOnXQW5LUN400QOBQI')
-	# ALLOW_EXCL = os.environ.get('ALLOW_EXCL', False)
 	CUSTOM_CMD = os.environ.get('CUSTOM_CMD', False)
 	API_WEATHER = os.environ.get('API_OPENWEATHER', None)
 	API_ACCUWEATHER = os.environ.get('API_ACCUWEATHER', None)
@@ -90,7 +86,7 @@ else:
 	try:
 		OWNER_ID = int(Config.OWNER_ID)
 	except ValueError:
-		raise Exception("Your OWNER_ID variable is not a valid integer.")
+		raise Exception("Sua variável OWNER_ID não é um número inteiro válido.")
 
 	MESSAGE_DUMP = Config.MESSAGE_DUMP
 	OWNER_USERNAME = Config.OWNER_USERNAME
@@ -102,27 +98,27 @@ else:
 	try:
 		SUDO_USERS = set(int(x) for x in Config.SUDO_USERS or [])
 	except ValueError:
-		raise Exception("Your sudo users list does not contain valid integers.")
+		raise Exception("Sua lista de usuários do sudo não contém números inteiros válidos.")
 
 	try:
 		SUPPORT_USERS = set(int(x) for x in Config.SUPPORT_USERS or [])
 	except ValueError:
-		raise Exception("Your support users list does not contain valid integers.")
+		raise Exception("Sua lista de usuários de suporte não contém números inteiros válidos.")
 
 	try:
 		SPAMMERS = set(int(x) for x in Config.SPAMMERS or [])
 	except ValueError:
-		raise Exception("Your spammers users list does not contain valid integers.")
+		raise Exception("Sua lista de usuários de spammers não contém números inteiros válidos.")
 
 	try:
 		GROUP_BLACKLIST = set(int(x) for x in Config.GROUP_BLACKLIST or [])
 	except ValueError:
-		raise Exception("Your GROUP_BLACKLIST users list does not contain valid integers.")
+		raise Exception("Sua lista de usuários GROUP_BLACKLIST não contém números inteiros válidos.")
 
 	try:
 		WHITELIST_USERS = set(int(x) for x in Config.WHITELIST_USERS or [])
 	except ValueError:
-		raise Exception("Your whitelisted users list does not contain valid integers.")
+		raise Exception("Sua lista de usuários na lista de permissões não contém números inteiros válidos.")
 
 	WEBHOOK = Config.WEBHOOK
 	URL = Config.URL
@@ -137,7 +133,6 @@ else:
 	STRICT_GBAN = Config.STRICT_GBAN
 	WORKERS = Config.WORKERS
 	BAN_STICKER = Config.BAN_STICKER
-	# ALLOW_EXCL = Config.ALLOW_EXCL
 	CUSTOM_CMD = Config.CUSTOM_CMD
 	API_WEATHER = Config.API_OPENWEATHER
 	API_ACCUWEATHER = Config.API_ACCUWEATHER
@@ -162,7 +157,6 @@ SUPPORT_USERS = list(SUPPORT_USERS)
 SPAMMERS = list(SPAMMERS)
 GROUP_BLACKLIST = list(GROUP_BLACKLIST)
 
-# Load at end to ensure all prev variables have been set
 from emilia.modules.helper_funcs.handlers import CustomCommandHandler
 
 if CUSTOM_CMD and len(CUSTOM_CMD) >= 1:
@@ -170,7 +164,7 @@ if CUSTOM_CMD and len(CUSTOM_CMD) >= 1:
 
 try:
 	from emilia.antispam import antispam_restrict_user, antispam_cek_user, detect_user
-	LOGGER.info("Note: AntiSpam loaded!")
+	LOGGER.info("Nota: AntiSpam inicializado!")
 	antispam_module = True
 except ModuleNotFoundError:
 	antispam_module = False
@@ -182,7 +176,6 @@ def spamcheck(func):
 		chat = update.effective_chat
 		user = update.effective_user
 		message = update.effective_message
-		# If msg from self, return True
 		if user.id == context.bot.id:
 			return False
 		if IS_DEBUG:
@@ -195,10 +188,10 @@ def spamcheck(func):
 			antispam_restrict_user(user.id, parsing_date)
 		if int(user.id) in SPAMMERS:
 			if IS_DEBUG:
-				print("^ This user is spammer!")
+				print("^ Esse user é um spammer!")
 			return False
 		elif int(chat.id) in GROUP_BLACKLIST:
-			dispatcher.bot.sendMessage(chat.id, "This group is in blacklist, i'm leave...")
+			dispatcher.bot.sendMessage(chat.id, "Este grupo está na blacklist, saindo...")
 			dispatcher.bot.leaveChat(chat.id)
 			return False
 		return func(update, context, *args, **kwargs)
